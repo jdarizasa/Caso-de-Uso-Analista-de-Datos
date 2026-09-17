@@ -96,6 +96,6 @@ def enriquecer_con_fuentes_externas(df_interno: pd.DataFrame, filepath_externo: 
     return df_consolidado
 
 if __name__ == '__main__':
-    data = cargar_y_procesar_datos('data/raw/inventario_subastas_simon.csv')
+    data = cargar_y_procesar_datos('data/data/raw/inventario_subastas_simon.csv')
     print("Módulo A:", resumen_modulo_a(data))
     print("Módulo B:", resumen_modulo_b(data))
