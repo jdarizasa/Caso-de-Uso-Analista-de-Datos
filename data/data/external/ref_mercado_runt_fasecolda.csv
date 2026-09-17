@@ -1,0 +1,83 @@
+Marca,Linea,Modelo,RUNT_Parque_Automotor_Estimado,Mercado_Dias_Rotacion_Promedio,Demanda_Mercado_RUNT,Fasecolda_Codigo_Referencia
+Chevrolet,Onix,2018,248654,32,Liquidez Media,FAS-10000
+Chevrolet,Onix,2019,240795,30,Alta Liquidez,FAS-10001
+Chevrolet,Onix,2020,225860,34,Liquidez Media,FAS-10002
+Chevrolet,Onix,2021,230390,34,Liquidez Media,FAS-10003
+Chevrolet,Onix,2022,254802,34,Liquidez Media,FAS-10004
+Chevrolet,Onix,2023,246575,30,Alta Liquidez,FAS-10005
+Chevrolet,Onix,2024,236964,32,Liquidez Media,FAS-10006
+Chevrolet,Tracker,2018,236284,40,Baja Liquidez,FAS-10007
+Chevrolet,Tracker,2019,247118,39,Baja Liquidez,FAS-10008
+Chevrolet,Tracker,2020,231265,41,Baja Liquidez,FAS-10009
+Chevrolet,Tracker,2021,241850,36,Liquidez Media,FAS-10010
+Chevrolet,Tracker,2022,254910,36,Liquidez Media,FAS-10011
+Chevrolet,Tracker,2023,229426,38,Liquidez Media,FAS-10012
+Chevrolet,Tracker,2024,246962,36,Liquidez Media,FAS-10013
+Hyundai,Tucson,2018,89423,40,Baja Liquidez,FAS-10014
+Hyundai,Tucson,2019,103020,44,Baja Liquidez,FAS-10015
+Hyundai,Tucson,2020,86363,42,Baja Liquidez,FAS-10016
+Hyundai,Tucson,2021,102495,44,Baja Liquidez,FAS-10017
+Hyundai,Tucson,2022,91023,45,Baja Liquidez,FAS-10018
+Hyundai,Tucson,2023,83322,45,Baja Liquidez,FAS-10019
+Hyundai,Tucson,2024,76685,44,Baja Liquidez,FAS-10020
+Kia,Picanto,2018,135769,28,Alta Liquidez,FAS-10021
+Kia,Picanto,2019,161967,25,Alta Liquidez,FAS-10022
+Kia,Picanto,2020,158333,22,Alta Liquidez,FAS-10023
+Kia,Picanto,2021,137433,27,Alta Liquidez,FAS-10024
+Kia,Picanto,2022,140311,26,Alta Liquidez,FAS-10025
+Kia,Picanto,2023,140051,26,Alta Liquidez,FAS-10026
+Kia,Picanto,2024,141420,23,Alta Liquidez,FAS-10027
+Kia,Sportage,2018,152568,43,Baja Liquidez,FAS-10028
+Kia,Sportage,2019,155939,41,Baja Liquidez,FAS-10029
+Kia,Sportage,2020,154769,38,Liquidez Media,FAS-10030
+Kia,Sportage,2021,163693,37,Liquidez Media,FAS-10031
+Kia,Sportage,2022,141396,40,Baja Liquidez,FAS-10032
+Kia,Sportage,2023,164419,40,Baja Liquidez,FAS-10033
+Kia,Sportage,2024,162480,40,Baja Liquidez,FAS-10034
+Mazda,CX-5,2018,128666,39,Baja Liquidez,FAS-10035
+Mazda,CX-5,2019,145658,35,Liquidez Media,FAS-10036
+Mazda,CX-5,2020,138942,39,Baja Liquidez,FAS-10037
+Mazda,CX-5,2021,144233,41,Baja Liquidez,FAS-10038
+Mazda,CX-5,2022,138431,39,Baja Liquidez,FAS-10039
+Mazda,CX-5,2024,122747,35,Liquidez Media,FAS-10040
+Mazda,Mazda 3,2018,145551,31,Liquidez Media,FAS-10041
+Mazda,Mazda 3,2019,146382,37,Liquidez Media,FAS-10042
+Mazda,Mazda 3,2020,120189,31,Liquidez Media,FAS-10043
+Mazda,Mazda 3,2021,139118,31,Liquidez Media,FAS-10044
+Mazda,Mazda 3,2022,123005,34,Liquidez Media,FAS-10045
+Mazda,Mazda 3,2023,141042,37,Liquidez Media,FAS-10046
+Mazda,Mazda 3,2024,121899,33,Liquidez Media,FAS-10047
+Nissan,Versa,2018,119118,35,Liquidez Media,FAS-10048
+Nissan,Versa,2019,96267,33,Liquidez Media,FAS-10049
+Nissan,Versa,2020,112912,35,Liquidez Media,FAS-10050
+Nissan,Versa,2021,106394,35,Liquidez Media,FAS-10051
+Nissan,Versa,2022,98556,33,Liquidez Media,FAS-10052
+Nissan,Versa,2023,98890,35,Liquidez Media,FAS-10053
+Nissan,Versa,2024,103838,37,Liquidez Media,FAS-10054
+Renault,Duster,2018,232464,28,Alta Liquidez,FAS-10055
+Renault,Duster,2019,219502,33,Liquidez Media,FAS-10056
+Renault,Duster,2020,226777,28,Alta Liquidez,FAS-10057
+Renault,Duster,2021,215627,27,Alta Liquidez,FAS-10058
+Renault,Duster,2022,213792,30,Alta Liquidez,FAS-10059
+Renault,Duster,2023,215555,33,Liquidez Media,FAS-10060
+Renault,Duster,2024,215253,27,Alta Liquidez,FAS-10061
+Renault,Kwid,2019,213433,28,Alta Liquidez,FAS-10062
+Renault,Kwid,2020,215233,26,Alta Liquidez,FAS-10063
+Renault,Kwid,2021,216016,25,Alta Liquidez,FAS-10064
+Renault,Kwid,2022,228897,31,Liquidez Media,FAS-10065
+Renault,Kwid,2023,207612,31,Liquidez Media,FAS-10066
+Renault,Kwid,2024,228425,30,Alta Liquidez,FAS-10067
+Toyota,Corolla,2018,190939,36,Liquidez Media,FAS-10068
+Toyota,Corolla,2019,187619,34,Liquidez Media,FAS-10069
+Toyota,Corolla,2020,186870,35,Liquidez Media,FAS-10070
+Toyota,Corolla,2021,188483,37,Liquidez Media,FAS-10071
+Toyota,Corolla,2022,191054,34,Liquidez Media,FAS-10072
+Toyota,Corolla,2023,180787,34,Liquidez Media,FAS-10073
+Toyota,Corolla,2024,192132,32,Liquidez Media,FAS-10074
+Toyota,Hilux,2018,182159,21,Alta Liquidez,FAS-10075
+Toyota,Hilux,2019,177206,23,Alta Liquidez,FAS-10076
+Toyota,Hilux,2020,173226,25,Alta Liquidez,FAS-10077
+Toyota,Hilux,2021,179541,24,Alta Liquidez,FAS-10078
+Toyota,Hilux,2022,168152,21,Alta Liquidez,FAS-10079
+Toyota,Hilux,2023,191531,19,Alta Liquidez,FAS-10080
+Toyota,Hilux,2024,166585,23,Alta Liquidez,FAS-10081
