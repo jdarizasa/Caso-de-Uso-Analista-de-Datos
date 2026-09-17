@@ -95,6 +95,26 @@ def enriquecer_con_fuentes_externas(df_interno: pd.DataFrame, filepath_externo: 
     
     return df_consolidado
 
+def calcular_costo_tenencia(
+    df: pd.DataFrame, tasa_wacc_anual: float = 0.14, costo_parqueadero_dia: float = 12000
+) -> pd.DataFrame:
+  """Calcula el costo financiero de oportunidad + almacenamiento por vehículo en stock."""
+  # Costo diario de oportunidad sobre el valor asignado de adquisición
+  df['Costo_Oportunidad_Diario'] = (
+      df['Precio_Compra_COP'] * (tasa_wacc_anual / 365)
+  )
+
+  # Costo total acumulado de tenencia a la fecha
+  df['Costo_Tenencia_Acumulado'] = (
+      df['Costo_Oportunidad_Diario'] + costo_parqueadero_dia
+  ) * df['Dias_en_Inventario']
+
+  # Margen Neto Real ajustado por tenencia
+  df['Margen_EBITDA_Neto_Real'] = (
+      df['Margen_EBITDA_COP'] - df['Costo_Tenencia_Acumulado']
+  )
+  return df
+  
 if __name__ == '__main__':
     data = cargar_y_procesar_datos('data/data/raw/inventario_subastas_simon.csv')
     print("Módulo A:", resumen_modulo_a(data))

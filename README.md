@@ -11,12 +11,15 @@ source ~/.bashrc
 ```
 * Creación de requirements 
 ```
-pip install --upgrade pip &&\
-		pip install -r requirements.txt
+pip install --upgrade pip && pip install -r requirements.txt
 ```
 * Carga de datos internos y externos en las carpetas de data
 
 ## Paso 2
 * ETL para datos externos (scripts/)
 * Limpieza y creación de indices (src/)
-* EDA
+* EDA (? - copilot)
+
+## Paso 3
+* Perfilamiento de los clientes (src/)
+* Modelamiento Pricing (src/)
