@@ -61,28 +61,38 @@ def calcular_elasticidad_descuento(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def sugerir_precio_reserva_optimo(
-    row: pd.Series, ajuste_base_pct: float = 0.05
+    row: pd.Series
 ) -> float:
   """Calcula el precio de reserva sugerido aplicando un descuento dinámico en función
   de los días estancado en inventario y el indicador de demanda del RUNT.
   """
-  precio_actual = row['Precio_Reserva_COP']
-  dias = row['Dias_en_Inventario']
-  liquidez = row.get('Demanda_Mercado_RUNT', 'Liquidez Media')
+  # Parámetros Financieros
+  TASA_WACC_ANUAL = 0.14
+  COSTO_PARQUEADERO_DIA = 12000
 
+  dias = row['Dias_en_Inventario']
+  liquidez = row['Demanda_Mercado_RUNT']
+  precio_reserva = row['Precio_Reserva_COP']
+  costo_adq = row['Costo_Adquisicion_COP']
+    
   # Si el vehículo ya se vendió, mantiene su precio original
   if row.get('Estado_Subasta') == 'Vendido':
-    return precio_actual
+    return precio_reserva
 
-  # Regla de ajuste de precio según días en stock y liquidez
-  if dias > 45:
-    factor_descuento = 0.10 if liquidez == 'Baja Liquidez' else 0.07
-  elif dias > 30:
-    factor_descuento = 0.05 if liquidez != 'Alta Liquidez' else 0.02
-  else:
-    factor_descuento = 0.0
-
-  return round(precio_actual * (1 - factor_descuento), -5)
+  # Costo de tenencia acumulado
+  costo_tenencia_diario = (costo_adq * (TASA_WACC_ANUAL / 365)) + COSTO_PARQUEADERO_DIA
+  costo_tenencia_acum = costo_tenencia_diario * dias
+    
+  # Multiplicador por demanda RUNT
+  mult_liquidez = {'Alta Liquidez': 0.5, #Alta demanda, mitad de descuento 
+                  'Liquidez Media': 1.0, #Baseline neutral, sin ajuste
+                  'Baja Liquidez': 1.3}.get(liquidez, 1.0) #Baja demanda, aumento del 30%
+    
+  # Factor continuo acotado al 10% máx.
+  pct_desgaste = (costo_tenencia_acum / costo_adq) * mult_liquidez
+  factor_descuento = min(0.10, pct_desgaste * 0.8) # 80% del costo acumulado por tenencia (factor de traspaso de costo a descuento)
+    
+  return round(precio_reserva * (1 - factor_descuento), -5)
 
 
 def evaluar_reasignacion_canal(row: pd.Series) -> str:
