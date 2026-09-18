@@ -1,4 +1,7 @@
 pandas
 numpy
 pathlib
-sklearn
+scikit-learn
+matplotlib
+seaborn
+ipykernel

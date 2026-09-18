@@ -18,7 +18,7 @@ pip install --upgrade pip && pip install -r requirements.txt
 ## Paso 2
 * ETL para datos externos (scripts/etl_fasecolda_runt_pipeline.py)
 * Limpieza y creación de indices (src/data_processing.py)
-* EDA (? - copilot)
+* EDA (notebooks/01_EDA.ipynb)
 
 ## Paso 3
 * Perfilamiento de los clientes (src/customer_profiling.py)
