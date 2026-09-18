@@ -30,7 +30,7 @@ pip install --upgrade pip && pip install -r requirements.txt
         if dias > 45:       # Compromete margen EBITDA
             factor_descuento = 0.10 if liquidez == 'Baja Liquidez' else 0.07
         elif dias > 30:     # Costo igual o superior a 1.5%
-            factor_descuento = 0.05 if liquidez != 'Alta Liquidez' else 0.02
+            factor_descuento = 0.05 if liquidez == 'Baja Liquidez' else 0.02
         else:               # Costo menor al 1.5%
             factor_descuento = 0.0
         # Promedio de ganancia es 17%, todos los descuentos propuestos respetan margen de ganancia bruto
@@ -40,7 +40,21 @@ pip install --upgrade pip && pip install -r requirements.txt
 
     * Reasignación de canales:
         * Versión 1: Hardcoded
-        * Versión 2: ?
+        ```
+        if dias > 45:
+            if liquidez == 'Baja Liquidez':
+                return 'Reasignar a Concesionario Aliado (Liquidación)'
+            else:
+                return 'Subasta Virtual con Ajuste Agresivo Dinámico'
+        elif dias > 30:
+            if liquidez == 'Baja Liquidez':
+                return 'Subasta Virtual con Ajuste Moderado Dinámico'
+            else:
+                return 'Mantener Subasta Virtual (Precio Objetivo)'
+        else:
+            return 'Canal Óptimo - Prioridad Alta'
+        ```
+        * Versión 2: Clasificación por árbol de decisión (src/channel_allocation.py)
 
 ## Paso ?
 * Implementar integración continua (CI)

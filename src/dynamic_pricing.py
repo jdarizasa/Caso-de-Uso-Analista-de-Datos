@@ -94,7 +94,6 @@ def sugerir_precio_reserva_optimo(
     
   return round(precio_reserva * (1 - factor_descuento), -5)
 
-
 def evaluar_reasignacion_canal(row: pd.Series) -> str:
   """Determina la estrategia óptima de canal comercial por vehículo con base en
   el tiempo en inventario y la liquidez de mercado obtenida del RUNT.
