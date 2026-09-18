@@ -22,7 +22,7 @@ class MotorReasignacionCanal:
     def _preparar_features(self, df: pd.DataFrame) -> pd.DataFrame:
         """Extrae y transforma las variables predictoras del vehículo."""
         X = pd.DataFrame()
-        X['Dias_en_Inventario'] = df['Dias_en_Inventario']
+        #X['Dias_en_Inventario'] = df['Dias_en_Inventario']
         X['Liquidez_Num'] = (
             df['Demanda_Mercado_RUNT'].map(self.mapa_liq).fillna(2)
         )
@@ -32,15 +32,26 @@ class MotorReasignacionCanal:
         return X
 
     def generar_target_financiero(self, df: pd.DataFrame) -> pd.Series:
-        """Crea la variable objetivo basada en la optimización de EBITDA y riesgo."""
-
+        """Combina el histórico de ventas exitosas con la optimización
+        financiera para el inventario no adjudicado o estancado.
+        """
         def definir_canal(row):
+        
+            if (
+                row.get('Estado_Subasta') == 'Vendido'
+                and pd.notnull(row.get('Canal_Venta'))
+            ):
+                return row['Canal_Venta']
+
             if (
                 row['Dias_en_Inventario'] > 45
-                and row['Demanda_Mercado_RUNT'] == 'Baja Liquidez'
+                and row.get('Demanda_Mercado_RUNT') == 'Baja Liquidez'
             ):
                 return 'Concesionario Aliado (Liquidación)'
-            elif row['Dias_en_Inventario'] > 30:
+            elif (
+                row['Dias_en_Inventario'] > 40
+                #and row.get('Demanda_Mercado_RUNT') == 'Baja Liquidez'
+            ):
                 return 'Venta Directa Flotas'
             else:
                 return 'Subasta Virtual'
@@ -62,7 +73,7 @@ class MotorReasignacionCanal:
     def obtener_reglas_texto(self) -> str:
         """Devuelve la estructura de reglas del árbol en texto interpretable."""
         feature_names = [
-            'Dias_en_Inventario',
+            #'Dias_en_Inventario',
             'Liquidez_Num',
             'Costo_Adquisicion_COP',
             'Modelo_Anio',
