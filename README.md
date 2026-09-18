@@ -23,3 +23,6 @@ pip install --upgrade pip && pip install -r requirements.txt
 ## Paso 3
 * Perfilamiento de los clientes (src/)
 * Modelamiento Pricing (src/)
+
+## Paso ?
+* Implementar integración continua (CI)

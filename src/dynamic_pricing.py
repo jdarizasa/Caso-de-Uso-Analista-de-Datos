@@ -1,14 +1,5 @@
-"""Módulo D: Motor de Pricing Dinámico, Elasticidad y Reasignación de Canales.
-
-Este módulo se encarga de:
-1. Estimar la elasticidad descuento-demanda (Win Rate vs. % Descuento sobre
-Fasecolda).
-2. Generar recomendaciones dinámicas de ajuste de precio de reserva.
-3. Asignar reglas de reasignación automática de canal para evitar acumulación de
-costos de tenencia.
-
-Autor: Equipo de Data Science & Analytics
-Fecha: Septiembre 2026
+"""
+Módulo D: Motor de Pricing Dinámico, Elasticidad y Reasignación de Canales.
 """
 
 import numpy as np
@@ -17,9 +8,7 @@ import pandas as pd
 
 def calcular_elasticidad_descuento(df: pd.DataFrame) -> pd.DataFrame:
   """Evalúa la relación entre el porcentaje de descuento otorgado respecto a la guía Fasecolda
-
   y la tasa de conversión de subasta (Win Rate).
-
   Retorna un DataFrame agrupado por tramos de descuento con sus respectivas
   métricas de elasticidad.
   """
@@ -75,7 +64,6 @@ def sugerir_precio_reserva_optimo(
     row: pd.Series, ajuste_base_pct: float = 0.05
 ) -> float:
   """Calcula el precio de reserva sugerido aplicando un descuento dinámico en función
-
   de los días estancado en inventario y el indicador de demanda del RUNT.
   """
   precio_actual = row['Precio_Reserva_COP']
@@ -99,7 +87,6 @@ def sugerir_precio_reserva_optimo(
 
 def evaluar_reasignacion_canal(row: pd.Series) -> str:
   """Determina la estrategia óptima de canal comercial por vehículo con base en
-
   el tiempo en inventario y la liquidez de mercado obtenida del RUNT.
   """
   dias = row['Dias_en_Inventario']
@@ -159,8 +146,8 @@ def ejecutar_motor_pricing_dinamico(
 
 if __name__ == '__main__':
   # Ejemplo de ejecución
-  df_inv = pd.read_csv('inventario_subastas_simon.csv')
-  ref_mercado = pd.read_csv('ref_mercado_runt_fasecolda.csv')
+  df_inv = pd.read_csv('data/data/raw/inventario_subastas_simon.csv')
+  ref_mercado = pd.read_csv('data/data/external/ref_mercado_runt_fasecolda.csv')
 
   df_resultado = ejecutar_motor_pricing_dinamico(df_inv, ref_mercado)
   print(df_resultado['Estrategia_Canal_Recomendada'].value_counts())

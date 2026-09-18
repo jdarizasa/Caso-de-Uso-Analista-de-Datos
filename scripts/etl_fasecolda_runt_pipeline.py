@@ -149,5 +149,5 @@ def generar_tabla_referencia_mercado(
 
 if __name__ == '__main__':
   # Ejemplo de ejecución:
-  # df_ref = generar_tabla_referencia_mercado('fasecolda_kaggle.csv', 'runt_datos_abiertos.csv')
+  # df_ref = generar_tabla_referencia_mercado('data/data/external/fasecolda_kaggle.csv', 'data/data/external/runt_datos_abiertos.csv')
   pass
