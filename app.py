@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+from sklearn.tree import plot_tree
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -460,3 +461,208 @@ with tab_c:
         st.warning(
             'No se encontraron vehículos vendidos/adjudicados para calcular las métricas de compradores bajo este filtro.'
         )
+# =========================================================
+# MÓDULO D: MOTOR DE PRICING DINÁMICO & REASIGNACIÓN ML
+# =========================================================
+with tab_d:
+    st.header('Motor de Pricing Dinámico & Optimización de Canales')
+
+    # ---------------------------------------------------------
+    # SECCIÓN 1: CURVA DE ELASTICIDAD & WIN RATE vs. DESCUENTO FASECOLDA
+    # ---------------------------------------------------------
+    st.subheader('1. Sensibilidad de Demanda & Elasticidad (Win Rate vs. Descuento)')
+    
+    # Evaluar elasticidad mediante el backend
+    df_elasticidad = calcular_elasticidad_descuento(df_filtrado)
+
+    # Preparar datos agregados y de dispersión para Plotly Scatter/Curve
+    df_temp_plot = df_filtrado.copy()
+    df_temp_plot['Pct_Descuento_Fasecolda'] = (
+        (df_temp_plot['Valor_Fasecolda_COP'] - df_temp_plot['Precio_Reserva_COP']) 
+        / df_temp_plot['Valor_Fasecolda_COP'] * 100
+    ).clip(lower=0)
+    df_temp_plot['Vendido_Flag'] = (df_temp_plot['Estado_Subasta'] == 'Vendido').astype(int)
+
+    col_e1, col_e2 = st.columns([2, 1])
+
+    with col_e1:
+        # Gráfica Interactiva Scatter / Curve con detalles al pasar el cursor (Hover)
+        fig_elasticidad = px.scatter(
+            df_temp_plot,
+            x='Pct_Descuento_Fasecolda',
+            y='Vendido_Flag',
+            color='Demanda_Mercado_RUNT',
+            hover_data=['Marca', 'Linea', 'Modelo', 'Precio_Reserva_COP', 'Dias_en_Inventario'],
+            trendline='rolling',
+            trendline_options=dict(window=15),
+            title='Relación entre % Descuento sobre Fasecolda y Tasa de Conversión (Win Rate)',
+            labels={
+                'Pct_Descuento_Fasecolda': '% Descuento vs. Guía Fasecolda',
+                'Vendido_Flag': 'Estado (1 = Vendido, 0 = No Vendido)',
+                'Demanda_Mercado_RUNT': 'Liquidez RUNT'
+            },
+            color_discrete_map={'Alta Liquidez': '#2ca02c', 'Liquidez Media': '#ff7f0e', 'Baja Liquidez': '#d62728'}
+        )
+        fig_elasticidad.update_layout(yaxis=dict(tickvals=[0, 1], ticktext=['No Vendido (0)', 'Vendido (1)']))
+        st.plotly_chart(fig_elasticidad, width='stretch')
+
+    with col_e2:
+        st.markdown("**Resumen por Tramos de Elasticidad**")
+        st.dataframe(
+            df_elasticidad.style.format({
+                'Descuento_Promedio': '{:.1%}',
+                'Win_Rate': '{:.1%}',
+                'Total_Vehiculos': '{:,}',
+                'Elasticidad_Demanda': '{:.2f}'
+            }),
+            width='stretch'
+        )
+        st.info(
+            "💡 **Interpretación:** Una elasticidad > 1.0 indica alta sensibilidad de conversión "
+            "frente a pequeños incrementos en el descuento aplicado sobre Fasecolda."
+        )
+
+    st.markdown("---")
+
+    # ---------------------------------------------------------
+    # SECCIÓN 2: REGLAS TEXTUALES Y SIMULADOR DE PRICING
+    # ---------------------------------------------------------
+    st.subheader('2. Reglas Financieras de Pricing y Simulador Interactivo')
+
+    # Regla Textual del Pricing
+    st.markdown("### 📜 Regla de Pricing Dinámico Impulsada por WACC & Parqueadero")
+    st.markdown("**Costo Tenencia Diario:**")
+    st.markdown(r"""
+    $$
+    \text{Costo Tenencia Diario} = \left(\text{Costo Adquisición} \times \frac{\text{WACC Anual (14\%)}}{365}\right) + \text{Parqueadero Diario (\$12{,}000)}
+    $$
+    """)
+
+    st.markdown("**Factor Descuento:**")
+    st.markdown(r"""
+    $$
+    \text{Factor Descuento} = \min\left(10\%,\ \left(\frac{\text{Costo Tenencia Acumulado}}{\text{Costo Adquisición}}\right) \times \text{Multiplicador Liquidez RUNT} \times 0.8\right)
+    $$
+    """)
+
+    st.markdown("**Multiplicadores según liquidez:**")
+    st.markdown(r"""
+    - **Alta Liquidez:** Multiplicador $\times 0.5$ (Descuento atenuado por alta demanda).
+    - **Liquidez Media:** Multiplicador $\times 1.0$ (Baseline neutral).
+    - **Baja Liquidez:** Multiplicador $\times 1.3$ (Descuento acelerado $+30\%$ para liberar capital).
+    """)
+
+    st.markdown("##### 🎛️ Simulador de Precio de Reserva Óptimo por Vehículo")
+    
+    col_sim1, col_sim2, col_sim3, col_sim4 = st.columns(4)
+    with col_sim1:
+        sim_costo = st.number_input('Costo Adquisición (COP)', min_value=10_000_000, max_value=300_000_000, value=45_000_000, step=1_000_000)
+    with col_sim2:
+        sim_reserva_orig = st.number_input('Precio Reserva Actual (COP)', min_value=10_000_000, max_value=300_000_000, value=50_000_000, step=1_000_000)
+    with col_sim3:
+        sim_dias = st.slider('Días en Inventario', min_value=1, max_value=120, value=38)
+    with col_sim4:
+        sim_liq = st.selectbox('Demanda Mercado RUNT', options=['Alta Liquidez', 'Liquidez Media', 'Baja Liquidez'], index=1)
+
+    # Evaluación en vivo usando la función del backend
+    row_sim = pd.Series({
+        'Estado_Subasta': 'Disponible',
+        'Dias_en_Inventario': sim_dias,
+        'Demanda_Mercado_RUNT': sim_liq,
+        'Precio_Reserva_COP': sim_reserva_orig,
+        'Costo_Adquisicion_COP': sim_costo
+    })
+    
+    from src.dynamic_pricing import sugerir_precio_reserva_optimo, evaluar_reasignacion_canal
+    sim_precio_sugerido = sugerir_precio_reserva_optimo(row_sim)
+    sim_canal_sugerido = evaluar_reasignacion_canal(row_sim)
+    sim_descuento_monto = sim_reserva_orig - sim_precio_sugerido
+    sim_descuento_pct = (sim_descuento_monto / sim_reserva_orig) * 100
+
+    col_res1, col_res2, col_res3 = st.columns(3)
+    col_res1.metric('Precio Reserva Sugerido', f"${sim_precio_sugerido:,.0f} COP", delta=f"-${sim_descuento_monto:,.0f} COP ({sim_descuento_pct:.1f}%)", delta_color="inverse")
+    col_res2.metric('Estrategia de Pricing', f"{sim_descuento_pct:.1f}% Descuento Aplicado")
+    col_res3.metric('Recomendación de Canal', sim_canal_sugerido)
+
+    st.markdown("---")
+
+    # ---------------------------------------------------------
+    # SECCIÓN 3: DESPLIEGUE DEL MODELO DE ML Y ÁRBOL DE DECISIÓN
+    # ---------------------------------------------------------
+    st.subheader('3. Modelo de ML (Decision Tree) para Reasignación de Canales')
+
+    # Instanciar y entrenar el modelo de Machine Learning con el backend
+    motor_ml = MotorReasignacionCanal(max_depth=3)
+    motor_ml.fit(df_filtrado)
+    df_evaluado = df_filtrado.copy()
+    df_evaluado['Canal_Predicho_ML'] = motor_ml.predict(df_evaluado)
+
+
+    col_ml1, col_ml2 = st.columns([1, 1.8])
+
+    with col_ml1:
+        st.markdown("**Matriz de Distribución de Canales Predichos (ML)**")
+        dist_canales = df_evaluado['Canal_Predicho_ML'].value_counts().reset_index()
+        dist_canales.columns = ['Canal Recomendado ML', 'Vehículos']
+        
+        fig_ml_bar = px.bar(
+            dist_canales,
+            x='Canal Recomendado ML',
+            y='Vehículos',
+            text='Vehículos',
+            color='Canal Recomendado ML',
+            title='Vehículos Reasignados por Canal'
+        )
+        fig_ml_bar.update_layout(
+            showlegend=False,
+            margin=dict(l=10, r=10, t=40, b=10)
+        )
+        st.plotly_chart(fig_ml_bar, width='stretch')
+
+    with col_ml2:
+        st.markdown("**Estructura Interpretable del Árbol de Decisión**")
+        
+        fig, ax = plt.subplots(figsize=(16, 8), dpi=300)
+        
+        plot_tree(
+            motor_ml.model,
+            feature_names=['Liquidez_Num', 'Costo_Adquisicion_COP', 'Modelo_Anio', 'Kilometraje'],
+            class_names=list(motor_ml.model.classes_),
+            filled=True,
+            rounded=True,
+            fontsize=8,        # Tamaño adecuado para no solaparse
+            impurity=False,      # Oculta el valor Gini para simplificar las cajas
+            precision=0,         # Muestra números enteros limpios (ej. precios sin decimales)
+            ax=ax
+        )
+        
+        plt.tight_layout(pad=0.5)
+        
+        st.pyplot(fig, width='stretch')
+        plt.close(fig)
+
+        st.caption(
+            "💡 **Leyenda de variables:** `Liquidez_Num` (1: Baja, 2: Media, 3: Alta). "
+            "El color de cada caja representa el canal comercial asignado por la regla de decisión."
+        )
+    # ---------------------------------------------------------
+    # SECCIÓN 4: TABLA CONSOLIDADA DE RESULTADOS
+    # ---------------------------------------------------------
+    st.subheader('4. Vista Consolidada de Inventario y Pricing Recomendado')
+
+    df_pricing_final = ejecutar_motor_pricing_dinamico(df_filtrado, df_filtrado)
+    df_pricing_final['Canal_Sugerido_ML'] = df_evaluado['Canal_Predicho_ML']
+
+    st.dataframe(
+        df_pricing_final[[
+            'ID_Vehiculo', 'Marca', 'Linea', 'Modelo', 'Dias_en_Inventario',
+            'Demanda_Mercado_RUNT', 'Precio_Reserva_COP', 'Precio_Reserva_Sugerido_COP',
+            'Diferencia_Precio_Sugerido_COP', 'Estrategia_Canal_Recomendada', 'Canal_Sugerido_ML'
+        ]].style.format({
+            'Precio_Reserva_COP': '${:,.0f} COP',
+            'Precio_Reserva_Sugerido_COP': '${:,.0f} COP',
+            'Diferencia_Precio_Sugerido_COP': '${:,.0f} COP',
+            'Dias_en_Inventario': '{:,}'
+        }),
+        width='stretch'
+    )
