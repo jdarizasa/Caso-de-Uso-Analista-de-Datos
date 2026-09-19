@@ -49,7 +49,7 @@ class MotorReasignacionCanal:
             ):
                 return 'Concesionario Aliado (Liquidación)'
             elif (
-                row['Dias_en_Inventario'] > 40
+                row['Dias_en_Inventario'] > 35
                 #and row.get('Demanda_Mercado_RUNT') == 'Baja Liquidez'
             ):
                 return 'Venta Directa Flotas'
