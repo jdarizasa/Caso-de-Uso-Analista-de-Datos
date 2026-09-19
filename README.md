@@ -1,3 +1,5 @@
+[![Codespaces Prebuilds](https://github.com/jdarizasa/Caso-de-Uso-Analista-de-Datos/actions/workflows/codespaces/create_codespaces_prebuilds/badge.svg)](https://github.com/jdarizasa/Caso-de-Uso-Analista-de-Datos/actions/workflows/codespaces/create_codespaces_prebuilds)
+
 # Caso-de-Uso-Analista-de-Datos
 Este es el repositorio de la Prueba Técnica y Caso de Uso: Analista de Datos para Finanzauto
 
