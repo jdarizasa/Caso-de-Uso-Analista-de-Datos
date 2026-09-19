@@ -18,6 +18,7 @@ from src.data_processing import (
     cargar_y_procesar_datos,
     enriquecer_con_fuentes_externas,
 )
+from src.customer_profiling import analizar_compradores
 from src.dynamic_pricing import (
     calcular_elasticidad_descuento,
     ejecutar_motor_pricing_dinamico,
@@ -353,3 +354,109 @@ with tab_b:
             },
         )
         st.plotly_chart(fig_aging_cat, width='stretch')
+
+# =========================================================
+# MÓDULO C: PERFILACIÓN & COMPORTAMIENTO DE COMPRADORES
+# =========================================================
+with tab_c:
+    st.header(
+        'Perfilación, Concentración & Arquetipos de Compradores'
+    )
+
+    # Validar que existan ventas en el dataset filtrado
+    df_vendidos_filtrados = df_filtrado[
+        df_filtrado['Estado_Subasta'] == 'Vendido'
+    ]
+
+    if not df_vendidos_filtrados.empty:
+        # 1. Ejecutar el análisis centralizado de src/customer_profiling.py
+        resumen_c = analizar_compradores(df_filtrado)
+
+        # KPIs Principales extraídos de analizar_compradores()
+        mc1, mc2, mc3, mc4 = st.columns(4)
+        mc1.metric(
+            'Compradores Únicos', f"{resumen_c['total_compradores_unicos']:,}"
+        )
+        mc2.metric(
+            'Tasa de Recompra', f"{resumen_c['tasa_recompra_pct']:.2f}%"
+        )
+        mc3.metric(
+            'Volumen Top 20% Clientes',
+            f"{resumen_c['pareto_top20_pct_volumen']:.2f}%",
+            help='% del volumen monetario adjudicado al Top 20% de compradores',
+        )
+        mc4.metric(
+            'Margen Top 20% Clientes',
+            f"{resumen_c['pareto_top20_pct_margen']:.2f}%",
+            help='% del margen acumulado generado por el Top 20% de compradores',
+        )
+
+        st.markdown('---')
+
+        # 2. Convertir la segmentación en DataFrame para gráficos de Streamlit/Plotly
+        df_segmentacion = pd.DataFrame(resumen_c['segmentacion'])
+
+        col_c1, col_c2 = st.columns(2)
+
+        with col_c1:
+            st.subheader('Aporte por Tipo de Comprador (% Volumen vs % Margen)')
+
+            fig_seg = px.bar(
+                df_segmentacion,
+                x='Tipo_Comprador',
+                y=['%_Volumen', '%_Margen'],
+                barmode='group',
+                title='Participación en Volumen monetario y Margen Total',
+                labels={
+                    'value': 'Porcentaje (%)',
+                    'variable': 'Métrica',
+                    'Tipo_Comprador': 'Tipo de Comprador',
+                },
+                color_discrete_sequence=['#1f77b4', '#2ca02c'],
+            )
+            fig_seg.update_traces(texttemplate='%{y:.1f}%', textposition='outside')
+            st.plotly_chart(fig_seg, width='stretch')
+
+        with col_c2:
+            st.subheader('Distribución de Flota Adjudicada por Arquetipo')
+
+            fig_pie_arquetipo = px.pie(
+                df_segmentacion,
+                names='Tipo_Comprador',
+                values='Vehiculos',
+                title='Proporción de Vehículos Comprados por Segmento',
+                hole=0.4,
+                color_discrete_sequence=px.colors.qualitative.Set2,
+            )
+            st.plotly_chart(fig_pie_arquetipo, width='stretch')
+
+        st.markdown('---')
+
+        # 3. Detalle de Arquetipos y Concentración
+        st.subheader('Tabla Comparativa por Arquetipo de Comprador')
+
+        # Calculamos el margen promedio por vehículo dentro del segmento
+        df_segmentacion['Margen_Promedio_COP'] = (
+            df_segmentacion['Margen_Acumulado_COP'] / df_segmentacion['Vehiculos']
+        )
+        df_segmentacion['Ticket_Promedio_COP'] = (
+            df_segmentacion['Volumen_Ventas_COP'] / df_segmentacion['Vehiculos']
+        )
+
+        st.dataframe(
+            df_segmentacion.style.format({
+                'Vehiculos': '{:,}',
+                'Volumen_Ventas_COP': '${:,.0f} COP',
+                'Margen_Acumulado_COP': '${:,.0f} COP',
+                '%_Volumen': '{:.2f}%',
+                '%_Margen': '{:.2f}%',
+                'Margen_Promedio_COP': '${:,.0f} COP',
+                'Ticket_Promedio_COP': '${:,.0f} COP',
+            }),
+            width='stretch',
+        )
+
+    else:
+        st.warning(
+            'No se encontraron vehículos vendidos/adjudicados para calcular las métricas de compradores bajo este filtro.'
+        )
