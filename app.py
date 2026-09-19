@@ -208,3 +208,148 @@ with tab_a:
         }),
         width='stretch',
     )
+
+# =========================================================
+# MÓDULO B: BENCHMARKING DE INVENTARIO VS. MERCADO
+# =========================================================
+with tab_b:
+    st.header(
+        'Benchmarking de Mercado, Categorización Fasecolda & Holding Cost'
+    )
+
+    # 1. Métricas Agregadas del Módulo B
+    holding_total = df_filtrado['Holding_Cost_COP'].sum()
+    ratio_costo_prom = df_filtrado['Ratio_Costo_Fasecolda'].mean() * 100
+    ratio_reserva_prom = df_filtrado['Ratio_Reserva_Fasecolda'].mean() * 100
+
+    pct_overpriced = (
+        (df_filtrado['Categoria_Fasecolda'] == 'Overpriced').mean() * 100
+    )
+
+    mb1, mb2, mb3 = st.columns(3)
+    mb1.metric('Holding Cost Total', f'${holding_total:,.0f} COP')
+    mb2.metric(
+        'Ratio Costo / Fasecolda',
+        f'{ratio_costo_prom:.1f}%',
+        help='Costo de Adquisición vs. Valor Comercial Fasecolda',
+    )
+    mb3.metric(
+        'Ratio Reserva / Fasecolda',
+        f'{ratio_reserva_prom:.1f}%',
+        help='Precio de Reserva vs. Valor Comercial Fasecolda',
+    )
+
+    st.markdown('---')
+
+    # 2. Análisis por Categoria_Fasecolda
+    col_b1, col_b2 = st.columns(2)
+
+    with col_b1:
+        st.subheader('Estructura de Precios por Categoria Fasecolda')
+
+        # Comparación de Promedios Monetarios
+        df_cat_summary = (
+            df_filtrado.groupby('Categoria_Fasecolda')
+            .agg(
+                Valor_Fasecolda=('Valor_Fasecolda_COP', 'mean'),
+                Costo_Adquisicion=('Costo_Adquisicion_COP', 'mean'),
+                Precio_Reserva=('Precio_Reserva_COP', 'mean'),
+                Total_Vehiculos=('Categoria_Fasecolda', 'count'),
+            )
+            .reset_index()
+        )
+
+        fig_bench = px.bar(
+            df_cat_summary,
+            x='Categoria_Fasecolda',
+            y=['Valor_Fasecolda', 'Costo_Adquisicion', 'Precio_Reserva'],
+            barmode='group',
+            labels={
+                'value': 'COP Promedio',
+                'variable': 'Métrica',
+                'Categoria_Fasecolda': 'Categoría Fasecolda',
+            },
+            title='Fasecolda vs. Costo Adquisición vs. Precio Reserva',
+            color_discrete_map={
+                'Valor_Fasecolda': '#2b5c8f',
+                'Costo_Adquisicion': '#d95f02',
+                'Precio_Reserva': '#7570b3',
+            },
+        )
+        fig_bench.update_layout(legend_title_text='Métrica')
+        st.plotly_chart(fig_bench, width='stretch')
+
+    with col_b2:
+        st.subheader('Distribución del Inventario por Categoría')
+
+        fig_pie_cat = px.pie(
+            df_cat_summary,
+            names='Categoria_Fasecolda',
+            values='Total_Vehiculos',
+            hole=0.4,
+            title='Proporción de Stock por Tipo de Precio',
+            color='Categoria_Fasecolda',
+            color_discrete_map={
+                'Overpriced': '#ef553b',
+                'Fair Value': '#636efa',
+                'Underpriced': '#00cc96',
+            },
+        )
+        st.plotly_chart(fig_pie_cat, width='stretch')
+
+    st.markdown('---')
+
+    # 3. Análisis de Antigüedad (Aging) & Holding Cost
+    col_b3, col_b4 = st.columns(2)
+
+    with col_b3:
+        st.subheader('Holding Cost Acumulado por Tramo de Aging')
+
+        # Agrupación por Tramo_Aging utilizando Holding_Cost_COP
+        df_aging = (
+            df_filtrado.groupby('Tramo_Aging', observed=False)
+            .agg(
+                Holding_Cost_Total=('Holding_Cost_COP', 'sum'),
+                Vehiculos=('Holding_Cost_COP', 'count'),
+                Holding_Promedio=('Holding_Cost_COP', 'mean'),
+            )
+            .reset_index()
+        )
+
+        fig_aging_cost = px.bar(
+            df_aging,
+            x='Tramo_Aging',
+            y='Holding_Cost_Total',
+            text_auto=',.0f',
+            #color='Holding_Cost_Total',
+            #color_continuous_scale='Reds',
+            labels={
+                'Tramo_Aging': 'Tramo de Días en Inventario',
+                'Holding_Cost_Total': 'Holding Cost Total (COP)',
+            },
+            title='Erosión Financiera Acumulada por Tramo de Tiempo',
+        )
+        fig_aging_cost.update_traces(textposition='outside')
+        st.plotly_chart(fig_aging_cost, width='stretch')
+
+    with col_b4:
+        st.subheader('Impacto de Aging en la Categoria Fasecolda')
+
+        # Composición de Categorías según el Tramo de Aging
+        fig_aging_cat = px.histogram(
+            df_filtrado,
+            x='Tramo_Aging',
+            color='Categoria_Fasecolda',
+            barmode='stack',
+            title='Evolución del Stock Overpriced/Underpriced por Días',
+            labels={
+                'Tramo_Aging': 'Tramo de Aging',
+                'count': 'Cantidad de Vehículos',
+            },
+            color_discrete_map={
+                'Overpriced': '#ef553b',
+                'Fair Value': '#636efa',
+                'Underpriced': '#00cc96',
+            },
+        )
+        st.plotly_chart(fig_aging_cat, width='stretch')
