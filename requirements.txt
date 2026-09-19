@@ -7,3 +7,5 @@ seaborn
 ipykernel
 scipy
 importlib
+plotly
+streamlit

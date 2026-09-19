@@ -55,6 +55,13 @@ pip install --upgrade pip && pip install -r requirements.txt
             return 'Canal Óptimo - Prioridad Alta'
         ```
         * Versión 2: Clasificación por árbol de decisión (src/channel_allocation.py)
+        * Check del modelo ML en notebook (notebooks/02_ml_channel_reasignment.ipynb)
+
+## Paso 4
+* Creación del dashboard con streamlit (app.py)
+```
+streamlit run app.py
+```
 
 ## Paso ?
 * Implementar integración continua (CI)
