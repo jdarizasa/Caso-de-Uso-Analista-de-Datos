@@ -47,7 +47,7 @@ def cargar_datos_completos():
 df_inventario = cargar_datos_completos()
 
 # 3. Sidebar - Filtros Globales
-st.sidebar.title('🚗 Filtros Estratégicos')
+st.sidebar.title('🚗 Filtros')
 
 marcas_opt = ['Todas'] + sorted(
     df_inventario['Marca'].dropna().unique().tolist()
@@ -60,7 +60,7 @@ else:
     df_filtrado = df_inventario.copy()
 
 # Header Principal
-st.title('📊 Motor de Optimización de Subastas, Pricing & Canales')
+st.title('Motor de Optimización de Subastas, Pricing & Canales')
 st.markdown(
     'Herramienta de inteligencia de negocio para maximizar la recuperación de capital y reducir la fricción en ventas.'
 )

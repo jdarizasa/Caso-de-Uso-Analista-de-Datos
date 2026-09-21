@@ -61,9 +61,7 @@ pip install --upgrade pip && pip install -r requirements.txt
 
 ## Paso 4
 * Creación del dashboard con streamlit (app.py)
+* Correr el dashboard (app.py)
 ```
 streamlit run app.py
 ```
-
-## Paso ?
-* Implementar integración continua (CI)
