@@ -10,3 +10,6 @@ importlib
 plotly
 streamlit
 dtreeviz
+pytest
+pylint
+black
