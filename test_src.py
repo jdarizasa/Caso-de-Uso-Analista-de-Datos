@@ -8,11 +8,11 @@ from src.dynamic_pricing import ejecutar_motor_pricing_dinamico
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_data():
     """Create minimal test data files if they don't exist"""
-    os.makedirs("data/raw", exist_ok=True)
-    os.makedirs("data/external", exist_ok=True)
+    os.makedirs("data/data/raw", exist_ok=True)
+    os.makedirs("data/data/external/", exist_ok=True)
     
     # Create minimal test CSV for inventario_subastas_simon.csv
-    if not os.path.exists("data/raw/inventario_subastas_simon.csv"):
+    if not os.path.exists("data/data/raw/inventario_subastas_simon.csv"):
         test_df = pd.DataFrame({
             'ID_Vehiculo': ['1001', '1002'],
             'Marca': ['Toyota', 'Hyundai'],
@@ -33,7 +33,7 @@ def setup_test_data():
         test_df.to_csv("data/data/raw/inventario_subastas_simon.csv", index=False)
     
     # Create minimal test CSV for ref_mercado_runt_fasecolda.csv
-    if not os.path.exists("data/external/ref_mercado_runt_fasecolda.csv"):
+    if not os.path.exists("data/data/external/ref_mercado_runt_fasecolda.csv"):
         ref_df = pd.DataFrame({
             'Marca': ['Chevrolet', 'Chevrolet'],
             'Linea': ['Onix', 'Onix'],
