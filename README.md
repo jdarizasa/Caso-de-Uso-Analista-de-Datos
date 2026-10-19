@@ -1,7 +1,7 @@
 [![Codespaces Prebuilds](https://github.com/jdarizasa/Caso-de-Uso-Analista-de-Datos/actions/workflows/codespaces/create_codespaces_prebuilds/badge.svg)](https://github.com/jdarizasa/Caso-de-Uso-Analista-de-Datos/actions/workflows/codespaces/create_codespaces_prebuilds)   [![CI](https://github.com/jdarizasa/Caso-de-Uso-Analista-de-Datos/actions/workflows/pylint.yml/badge.svg)](https://github.com/jdarizasa/Caso-de-Uso-Analista-de-Datos/actions/workflows/pylint.yml)
 
 # Caso-de-Uso-Analista-de-Datos
-Este es el repositorio de la Prueba Técnica y Caso de Uso: Analista de Datos.
+Este proyecto documenta el desarrollo de una solución end-to-end que abarca todo el flujo de trabajo de un especialista de datos: desde la conexión y extracción de datos desde distintas bases de datos, pasando por la limpieza, transformación y exploración de la información, hasta la construcción y evaluación de modelos de machine learning para generar predicciones y hallazgos accionables. Finalmente, todos los resultados, visualizaciones e insights se despliegan en un dashboard interactivo construido con Streamlit, que permite explorar los datos y comunicar los resultados de manera clara y accesible. El repositorio incluye el código, la documentación del proceso y las instrucciones para reproducir la solución.
 
 ## Paso 1
 * Creación de devcontainer (.devcontainer)
